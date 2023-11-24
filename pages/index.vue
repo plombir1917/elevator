@@ -4,11 +4,11 @@
       <b-navbar toggleable="sm" type="light" variant="light">
         <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
 
-        <b-navbar-brand>{{ newSession.sessionId }}</b-navbar-brand>
+        <b-navbar-brand>{{ currentSession.sessionId }}</b-navbar-brand>
 
         <b-collapse id="nav-text-collapse" is-nav>
           <b-navbar-nav>
-            <b-nav-text>{{ newSession.closedSessionId }}</b-nav-text>
+            <b-nav-text>{{ currentSession.closedSessionId }}</b-nav-text>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
@@ -16,22 +16,13 @@
     <main>
       <div class="house">
         <table width="20%" cellspacing="0" cellpadding="63">
-          <tr id="3">
+          <img src="../static/elevator-closed.svg" alt="fav" />
+
+          <tr v-for="floor in newSession.floors" :key="floor">
             <td width="200" valign="top"></td>
-            <td id="third_floor" valign="top">
-              <button id="third_floor" inner-height="70"></button>
-            </td>
-          </tr>
-          <tr id="2">
-            <td width="200" valign="top"></td>
-            <td id="second_floor" valign="top">
-              <button id="second_floor" inner-height="70"></button>
-            </td>
-          </tr>
-          <tr id="1">
             <td class="lift" width="5" valign="top"></td>
-            <td id="first_floor" valign="top">
-              <button id="first_floor" inner-height="70"></button>
+            <td id="floor" valign="top">
+              <button id="third_floor" inner-height="70"></button>
             </td>
           </tr>
         </table>
@@ -123,9 +114,9 @@
         </div>
         <b-button
           variant="outline-primary"
-          v-if="newSession.sessionId"
+          v-if="currentSession.sessionId"
           class="newCycle_button"
-          @click.prevent="startNextCycle(newSession.sessionId)"
+          @click.prevent="startNextCycle(currentSession.sessionId)"
           >Новый цикл</b-button
         >
       </div>
@@ -139,7 +130,12 @@ import Vue from 'vue'
 
 export default Vue.extend({
   data: () => ({
-    newSession: {},
+    newSession: {
+      timeFactor: 1.0,
+      floors: 5,
+      clientName: 'захар',
+    },
+    currentSession: {},
     nextCycle: {
       MoveUpFast: false,
       MoveUpSlow: false,
@@ -157,7 +153,7 @@ export default Vue.extend({
   }),
 
   async mounted() {
-    this.newSession = await this.$axios.$post(
+    this.currentSession = await this.$axios.$post(
       'https://lstu.fusionsoft.ru/srv-elevator/newSession?timeFactor=1.0&floors=3&clientName=захар'
     )
   },
@@ -204,22 +200,28 @@ export default Vue.extend({
   font-size: 10;
 }
 .lift {
-  background: whitesmoke;
+  background: url('../static/elevator-closed.svg'), no-repeat;
 }
 .house {
+  margin: auto 0;
+  background-color: whitesmoke;
 }
 section {
   text-align: center;
 }
 
 main {
+  max-width: 40%;
+  margin: 1% auto auto auto;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .options {
+  margin: auto 0;
 }
 
 .form {
+  margin-bottom: 2%;
 }
 </style>
