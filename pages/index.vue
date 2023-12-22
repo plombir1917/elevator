@@ -16,8 +16,6 @@
     <main>
       <div class="house">
         <table width="20%" cellspacing="0" cellpadding="63">
-          <img src="../static/elevator-closed.svg" alt="fav" />
-
           <tr v-for="floor in newSession.floors" :key="floor">
             <td width="200" valign="top"></td>
             <td class="lift" width="5" valign="top"></td>
@@ -135,7 +133,7 @@ export default Vue.extend({
       floors: 5,
       clientName: 'захар',
     },
-    currentSession: {},
+    currentSession: { sessionId: 0 },
     nextCycle: {
       MoveUpFast: false,
       MoveUpSlow: false,
@@ -156,6 +154,11 @@ export default Vue.extend({
     this.currentSession = await this.$axios.$post(
       'https://lstu.fusionsoft.ru/srv-elevator/newSession?timeFactor=1.0&floors=3&clientName=захар'
     )
+    if (this.currentSession.sessionId) {
+      setInterval(async () => {
+        await this.startNextCycle(this.currentSession.sessionId)
+      })
+    }
   },
 
   methods: {
@@ -168,6 +171,7 @@ export default Vue.extend({
         alert(this.cycleRes.emulation.Alarm)
       }
     },
+
     onSubmit(event: any) {
       const res = confirm('Отправляем?')
       console.log(res)
